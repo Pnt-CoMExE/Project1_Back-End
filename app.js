@@ -32,7 +32,30 @@ app.post('/login', (req, res) => {
     // Write your code here
 
 // Add new expenses
-    // Write your code here
+    app.post("/expenses/add/:userId", (req, res) => {
+  const userIdParam = req.params.userId;
+  const { item, paid } = req.body ?? {};
+
+  if (!userIdParam ||  !item || paid === undefined) {
+    return res.status(400).json({ message: "Missing required fields: userId(param), item, paid" });
+  }
+
+  const amount = Number(paid);
+  if (!Number.isFinite(amount)) {
+    return res.status(400).json({ message: "paid must be a number" });
+  }
+
+
+  const sql = "INSERT INTO expense (user_id, item, paid, date) VALUES (?, ?, ?, NOW())";
+  con.query(sql, [userIdParam, item, amount], (err, result) => {
+    if (err) {
+      console.error("DB ERROR:", err);
+      return res.status(500).json({ message: "Database error", detail: err.message });
+    }
+    res.status(201).json({ message: "Expense added successfully", id: result.insertId });
+  });
+});
+
     
 // Delete expenses
     // Write your code here
