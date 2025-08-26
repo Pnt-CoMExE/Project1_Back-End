@@ -89,6 +89,26 @@ app.get('/expenses/:userId', (req, res) => {
     
 // Delete expenses
     // Write your code here
+    app.delete('/expenses/:id', (req, res) => {
+    const expenseId = req.params.id;
+
+    const sql = "DELETE FROM expense WHERE id = ?";
+    con.query(sql, [expenseId], (err, result) => {
+        if (err) {
+            return res.status(500).send("Delete failed. An error occurred."); // ตรวยสอบ error จากการลบข้อมูล และ จะส่ง error กลับไปให้ client
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).send("You can't find this item."); // === 0 คือถ้าไม่มีแถวไหนถูกลบ จะออกจากฟังก์ชัน และ ส่งข้อความนว่าไม่พบของครับ
+        }
+
+        res.json({ 
+            success: true, 
+            message: "The item was successfully deleted.", 
+            id: expenseId 
+        });
+    });
+});
 
 const PORT = 3000;
 app.listen(PORT, () => {
