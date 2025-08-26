@@ -24,6 +24,18 @@ app.post('/login', (req, res) => {
 
 // Show all expenses
     // Write your code here
+app.get('/expenses/:userId', (req, res) => {
+    const { userId } = req.params;
+    const sql = "SELECT id, item, paid, DATE_FORMAT(date, '%Y-%m-%d %H:%i:%s') as date FROM expense WHERE user_id = ? ORDER BY date DESC"; // Y 4 หลัก . m,d,h,i,s 2 หลัก 
+    con.query(sql, [userId], function(err, results) {
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).send("Database server error");
+        }
+        res.json(results);
+    });
+});
+
 
 // Show today's expenses
     // Write your code here
