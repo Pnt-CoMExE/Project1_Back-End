@@ -26,7 +26,25 @@ app.post('/login', (req, res) => {
     // Write your code here
 
 // Show today's expenses
-    // Write your code here
+     app.get('/expenses/:userId/today', (req, res) => {
+  const userId = req.params.userId;
+  const sql = "SELECT * FROM expense WHERE user_id = ? AND DATE(date) = CURDATE() ORDER BY date DESC";
+  
+  con.query(sql, [userId], function(err, results) {
+    if (err) {
+      return res.status(500).send("Database server error");
+    }
+    
+    // คำนวณผลรวมค่าใช้จ่ายวันนี้
+    const total = results.reduce((sum, row) => sum + row.paid, 0);
+
+    res.json({
+      expenses: results,
+      total: total
+    });
+  });
+});
+
 
 // Search expenses
     // Write your code here
