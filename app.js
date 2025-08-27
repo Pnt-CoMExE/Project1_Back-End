@@ -59,7 +59,25 @@ app.get('/expenses/:userId', (req, res) => {
 
 
 // Search expenses
-    // Write your code here
+   app.get('/expenses/:userId/search', (req, res) => {
+  const userId = req.params.userId;
+  const keyword = req.query.query;
+
+  if (!keyword) {
+    return res.status(400).send("Missing search keyword");
+  }
+
+  const sql = "SELECT * FROM expense WHERE user_id = ? AND item LIKE ?";
+  const likeQuery = '%' + keyword + '%';
+
+  con.query(sql, [userId, likeQuery], function(err, results) {
+    if (err) {
+      return res.status(500).send("Database server error");
+    }
+    res.json(results);
+  });
+});
+
 
 // Add new expenses
     app.post("/expenses/add/:userId", (req, res) => {
