@@ -29,7 +29,21 @@ app.post('/login', (req, res) => {
     // Write your code here
 
 // Search expenses
-    // Write your code here
+    app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+    const sql = "SELECT id, password FROM users WHERE username = ?";
+    con.query(sql, [username], function(err, results) {
+        if (err) return res.status(500).send("Database server error");
+        if (results.length != 1) return res.status(401).send("Wrong username");
+
+        bcrypt.compare(password, results[0].password, function(err, same) {
+            if (err) return res.status(500).send("Hashing error");
+            if (same) return res.json({ userId: results[0].id });
+            return res.status(401).send("Wrong password");
+        });
+    });
+});
+
 
 // Add new expenses
     // Write your code here
